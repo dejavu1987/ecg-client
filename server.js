@@ -7,8 +7,39 @@ sockserver.on("connection", (ws) => {
   ws.on("close", () => console.log("Client has disconnected!"));
 });
 
+const getRandomInRange = (min, max) => {
+  return Math.round(min + Math.random() * (max - min));
+};
 setInterval(() => {
+  const msecDiv = +new Date() % 1000;
+
   sockserver.clients.forEach((client) => {
-    client.send(Math.round(random() * 4000));
+    // const data = `${Math.round(Math.random() * 4000)} ${Math.round(
+    //   Math.random() * 4000
+    // )} ${Math.round(Math.random() * 4000)} ${Math.round(
+    //   Math.random() * 4000
+    // )} ${Math.round(Math.random() * 4000)}`;
+    let min = 0;
+    let max = 4000;
+
+    if (msecDiv < 400 || msecDiv > 600) {
+      min = 1000;
+      max = 1100;
+    }
+    if ((msecDiv < 250 && msecDiv > 100) || (msecDiv < 900 && msecDiv > 800)) {
+      min = 1100;
+      max = 1200;
+    }
+    if (msecDiv >= 400 && msecDiv <= 600) {
+      min = 1100;
+      max = 2000;
+    }
+    if (msecDiv >= 450 && msecDiv <= 550) {
+      min = 2000;
+      max = 3000;
+    }
+    const data = getRandomInRange(min, max);
+    console.log({ data });
+    client.send(data);
   });
-}, 8000);
+}, 10);
