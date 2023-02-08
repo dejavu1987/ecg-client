@@ -22,7 +22,7 @@ setInterval(() => {
     let min = 0;
     let max = 4000;
 
-    if (msecDiv < 400 || msecDiv > 600) {
+    if (msecDiv < 450 || msecDiv > 550) {
       min = 1000;
       max = 1100;
     }
@@ -30,16 +30,19 @@ setInterval(() => {
       min = 1100;
       max = 1200;
     }
-    if (msecDiv >= 400 && msecDiv <= 600) {
+    if ((msecDiv < 450 && msecDiv > 380) || (msecDiv < 650 && msecDiv > 550)) {
+      min = 900;
+      max = 1000;
+    }
+    if (msecDiv >= 450 && msecDiv <= 550) {
       min = 1100;
       max = 2000;
     }
-    if (msecDiv >= 450 && msecDiv <= 550) {
+    if (msecDiv >= 490 && msecDiv <= 510) {
       min = 2000;
       max = 3000;
     }
     const data = getRandomInRange(min, max);
-    console.log({ data });
     client.send(data);
   });
 }, 10);
