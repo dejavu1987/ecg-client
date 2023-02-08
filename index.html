@@ -132,11 +132,16 @@
 
         ws.onmessage = function (evt) {
           const val = evt.data;
-          data.push({
-            time: ++t,
-            value: parseInt(val),
-          });
-          tick();
+          val
+            .trim()
+            .split(" ")
+            .forEach((v) => {
+              data.push({
+                time: ++t,
+                value: parseInt(v),
+              });
+              tick();
+            });
         };
 
         ws.onclose = function () {
