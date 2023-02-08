@@ -45,4 +45,4 @@ setInterval(() => {
     const data = getRandomInRange(min, max);
     client.send(data);
   });
-}, 10);
+}, 9);

@@ -130,8 +130,23 @@
         ws.onopen = function () {
           ws.send("Hello");
         };
-
+        let millis = 0;
+        let millisBuf = [];
         ws.onmessage = function (evt) {
+          const newMillis = performance.now();
+          // console.log(newMillis - millis);
+
+          if (millisBuf.length < 11) {
+            millisBuf.push(newMillis - millis);
+          }
+          if (millisBuf.length === 10) {
+            console.log(
+              Math.round(10000 / millisBuf.reduce((p, c) => p + c, 0))
+            );
+            millisBuf = [];
+          }
+          millis = newMillis;
+
           const val = evt.data;
           val
             .trim()
