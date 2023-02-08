@@ -5,7 +5,6 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ECG</title>
-    <!-- Load d3.js -->
     <script src="https://d3js.org/d3.v3.js"></script>
     <style>
       body {
@@ -122,7 +121,9 @@
       }
 
       if ("WebSocket" in window) {
-        var ws = new WebSocket("ws://192.168.0.37/ws");
+        // var ws = new WebSocket("ws://192.168.0.37/ws");
+        // Mock server
+        var ws = new WebSocket("ws://localhost:3211");
         ws.onerror = (e) => {
           console.log({ e });
         };
