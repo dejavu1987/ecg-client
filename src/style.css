@@ -6,6 +6,12 @@ body {
   display: block;
   width: 1000px;
 }
+
+.y.axis {
+  fill: #ccc;
+  color: #ccc;
+}
+
 .ecg-bg {
   width: 814px;
   height: 640px;

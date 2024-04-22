@@ -13,16 +13,17 @@ const [_val, setVal] = ecgApp.useState("value", 0);
 const pauseBtn = document.getElementById("pause-btn");
 
 let t = -1;
-const n = 600;
+const n = 300;
+const analogResolution = 255;
 const data = [];
 
 const margin = {
   top: 6,
   right: 0,
   bottom: 40,
-  left: 40,
+  left: 0,
 };
-const width = n - margin.right;
+const width = 600 - margin.right - margin.left;
 const height = 360 - margin.top - margin.bottom;
 
 const x = d3.scale
@@ -31,7 +32,8 @@ const x = d3.scale
   .range([0, width]);
 const xAxis = d3.svg.axis().scale(x).orient("bottom");
 
-const y = d3.time.scale().range([height, 0]).domain([0, 4000]);
+const y = d3.scale.linear().range([height, 0]).domain([0, analogResolution]);
+const yAxis = d3.svg.axis().scale(y).orient("left");
 
 const line = d3.svg
   .line()
@@ -49,7 +51,7 @@ const svg = d3
   .append("svg")
   .attr("width", width + margin.left + margin.right)
   .attr("height", height + margin.top + margin.bottom)
-  .style("margin-left", -margin.left + "px")
+  .style("margin-left", margin.left + "px")
   .append("g")
   .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
@@ -61,11 +63,17 @@ svg
   .attr("width", width)
   .attr("height", height);
 
-const axis = svg
+const $xAxis = svg
   .append("g")
   .attr("class", "x axis")
   .attr("transform", "translate(0," + height + ")")
   .call((x.axis = xAxis));
+
+const $yAxis = svg
+  .append("g")
+  .attr("class", "y axis")
+  .attr("transform", "translate(60,0)")
+  .call((y.axis = yAxis));
 
 const path = svg
   .append("g")
@@ -79,7 +87,7 @@ const path = svg
 
 function tick() {
   x.domain([t - n + 2, t]);
-  axis.call(x.axis);
+  $xAxis.call(x.axis);
 
   // redraw the line
   svg.select(".line").attr("d", line);
@@ -88,15 +96,13 @@ function tick() {
 }
 
 if ("WebSocket" in window) {
-  // const ws = new WebSocket("ws://192.168.0.37/ws");
+  const ws = new WebSocket("ws://esp-ecg.local/ws");
   // Mock server
-  var ws = new WebSocket("ws://localhost:3211");
+  // var ws = new WebSocket("ws://localhost:3211");
   ws.onerror = (e) => {
     console.error({ e });
   };
   ws.onopen = function () {
-    ws.send("Hello");
-
     pauseBtn.addEventListener("click", (e) => {
       ws.send("p");
     });
@@ -126,7 +132,7 @@ if ("WebSocket" in window) {
         millis = newMillis;
 
         // Calculate heart rate
-        if (value > 2000) {
+        if (value > analogResolution * 0.6) {
           const now = +new Date();
           const rr = now - lastR;
           if (rr > 200) {
@@ -141,6 +147,8 @@ if ("WebSocket" in window) {
           time: ++t,
           value,
         });
+        // document.getElementById("data").append(`, ${value}`);
+
         // Just to visualize heart beating
         if (millisBuf.length % 5) setVal(value / 80 + 15);
         tick();
@@ -156,3 +164,10 @@ if ("WebSocket" in window) {
 } else {
   console.error("WebSocket NOT supported by your Browser!");
 }
+
+document.getElementById("new").addEventListener("click", (e) => {
+  const newData = document.createElement("textarea");
+  document.getElementById("datag").append(newData);
+  document.getElementById("data").setAttribute("id", +new Date());
+  newData.setAttribute("id", "data");
+});
